@@ -40,7 +40,13 @@ public class SeguridadConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth").permitAll()
+                        .requestMatchers("/api/auth/").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/registro").permitAll()
+                )
+                .authorizeHttpRequests(authorize -> authorize
+                     .requestMatchers("/api/auth/perfil").hasAnyAuthority("ADMIN", "USER")
                 )
 //                .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers("/api/usuarios/**").hasAnyAuthority("ADMIN", "USER")

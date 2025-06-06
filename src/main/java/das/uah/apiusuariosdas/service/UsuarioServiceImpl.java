@@ -2,11 +2,13 @@ package das.uah.apiusuariosdas.service;
 
 import das.uah.apiusuariosdas.dao.IUsuarioDao;
 import das.uah.apiusuariosdas.dto.RegistroUsuarioDtoIn;
+import das.uah.apiusuariosdas.jwt.ContextUtil;
 import das.uah.apiusuariosdas.model.Rol;
 import das.uah.apiusuariosdas.model.Usuario;
 import das.uah.apiusuariosdas.util.ConstantsHelper;
 import das.uah.apiusuariosdas.util.ErrorHelper;
 import das.uah.apiusuariosdas.util.ResponseHelper;
+import das.uah.apiusuariosdas.util.ValidationsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,38 @@ public class UsuarioServiceImpl implements IUsuarioService{
     }
 
     @Override
+    public Usuario getById(long eId) {
+        return usuarioDao.getById(eId).orElse(null);
+    }
+
+    @Override
+    public Usuario getUserLogin() {
+        return this.getByCorreoAndEstado(ContextUtil.getCurrentUsername(), 1).orElse(null);
+    }
+
+    @Override
+    public ResponseHelper updatePerfil(RegistroUsuarioDtoIn eUsuario) {
+        ResponseHelper result = new ResponseHelper();
+        validatePerfil(eUsuario, result);
+        if (result.getStatus().compareTo(ConstantsHelper.SUCCESS) == 0) {
+            Usuario userLogin = this.getUserLogin();
+            if (userLogin != null) {
+                userLogin.setNombre(eUsuario.getNombre());
+                userLogin.setApellido(eUsuario.getApellido());
+                userLogin.setCorreo(eUsuario.getCorreo());
+                if (!eUsuario.getPassword().isEmpty()) {
+                    userLogin.setPassword(passwordEncoder.encode(eUsuario.getPassword()));
+                }
+                usuarioDao.save(userLogin);
+            } else {
+                result.setStatus(ConstantsHelper.FAILURE);
+                result.getErrors().add(new ErrorHelper("id", "Usuario no encontrado"));
+            }
+        }
+        return result;
+    }
+
+    @Override
     public ResponseHelper create(RegistroUsuarioDtoIn eUsuario) {
         ResponseHelper _result = new ResponseHelper();
 
@@ -47,7 +81,7 @@ public class UsuarioServiceImpl implements IUsuarioService{
             usuario.setNombre(eUsuario.getNombre());
             usuario.setApellido(eUsuario.getApellido());
             usuario.setCorreo(eUsuario.getCorreo());
-            usuario.setPassword(eUsuario.getPassword());
+            usuario.setPassword(eUsuario.getPassword());pwd
             usuario.setEstado(1); // activo
             Rol rol = rolService.getById(rolRH.getIdData());
             usuario.getRoles().add(rol);
@@ -75,5 +109,41 @@ public class UsuarioServiceImpl implements IUsuarioService{
         _result.setIdData(0);
 
         if (!_result.getErrors().isEmpty()) _result.setStatus(ConstantsHelper.FAILURE);
+    }
+
+    /**
+     *
+     * @param eEntDao
+     * @param _result
+     */
+    private void validatePerfil(RegistroUsuarioDtoIn eEntDao, ResponseHelper _result) {
+        Usuario userLogin = this.getUserLogin();
+        // validate nombre
+        if (eEntDao.getNombre()== null || eEntDao.getNombre().isEmpty()) {
+            _result.setStatus(ConstantsHelper.FAILURE);
+            _result.getErrors().add(new ErrorHelper("nombre","Debe ingresar un nombre"));
+        }
+
+        // validate apellido
+        if (eEntDao.getApellido()== null || eEntDao.getApellido().isEmpty()) {
+            _result.setStatus(ConstantsHelper.FAILURE);
+            _result.getErrors().add(new ErrorHelper("apellido","Debe ingresar un apellido"));
+        }
+
+        // validar correo
+        if(!ValidationsHelper.emailIsValid(eEntDao.getCorreo())) {
+            _result.setStatus(ConstantsHelper.FAILURE);
+            _result.getErrors().add(new ErrorHelper("correo", "Debe ingresar un correo valido"));
+        }else if(userLogin != null) {
+            if (userLogin.getCorreo().compareToIgnoreCase(eEntDao.getCorreo()) != 0 &&
+                    usuarioDao.existsByCorreo(eEntDao.getCorreo())
+            ) {
+                _result.setStatus(ConstantsHelper.FAILURE);
+                _result.getErrors().add(new ErrorHelper("correo", "Ya existe un usuario con ese correo"));
+            }
+        }else if(usuarioDao.existsByCorreo(eEntDao.getCorreo())) {
+            _result.setStatus(ConstantsHelper.FAILURE);
+            _result.getErrors().add(new ErrorHelper("correo", "Ya existe un usuario con ese correo"));
+        }
     }
 }

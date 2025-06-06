@@ -25,4 +25,14 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     public Usuario save(Usuario eUsuario) {
         return repository.save(eUsuario);
     }
+
+    @Override
+    public Optional<Usuario> getById(long eId) {
+        return repository.findById(eId);
+    }
+
+    @Override
+    public Boolean existsByCorreo(String eCorreo) {
+        return repository.existsByCorreo(eCorreo);
+    }
 }

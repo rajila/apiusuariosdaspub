@@ -5,6 +5,7 @@ import das.uah.apiusuariosdas.dto.LoginDtoOut;
 import das.uah.apiusuariosdas.dto.RegistroUsuarioDtoIn;
 import das.uah.apiusuariosdas.jwt.GeneratorJwt;
 import das.uah.apiusuariosdas.jwt.UserLoginJwt;
+import das.uah.apiusuariosdas.model.Usuario;
 import das.uah.apiusuariosdas.service.IUsuarioService;
 import das.uah.apiusuariosdas.util.ResponseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -56,6 +55,22 @@ public class AuthController {
     @PostMapping( "/registro")
     public ResponseEntity<ResponseHelper> register(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
         ResponseHelper _response = userService.create(eUsuarioDtoIn);
+        if (_response != null) return ResponseEntity.ok(_response);
+        return new ResponseEntity<>(null, HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @CrossOrigin
+    @GetMapping( "/perfil")
+    public ResponseEntity<Usuario> perfil() {
+        Usuario _usuario = userService.getUserLogin();
+        return (_usuario == null) ?
+                ResponseEntity.notFound().build() : ResponseEntity.ok(_usuario);
+    }
+
+    @CrossOrigin
+    @PostMapping( "/perfil")
+    public ResponseEntity<ResponseHelper> perfilUpdate(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
+        ResponseHelper _response = userService.updatePerfil(eUsuarioDtoIn);
         if (_response != null) return ResponseEntity.ok(_response);
         return new ResponseEntity<>(null, HttpStatus.FAILED_DEPENDENCY);
     }
