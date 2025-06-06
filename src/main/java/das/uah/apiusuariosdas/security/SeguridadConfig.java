@@ -48,6 +48,9 @@ public class SeguridadConfig {
                 .authorizeHttpRequests(authorize -> authorize
                      .requestMatchers("/api/auth/perfil").hasAnyAuthority("ADMIN", "USER")
                 )
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/usuarios/**").hasAnyAuthority("ADMIN")
+                )
 //                .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers("/api/usuarios/**").hasAnyAuthority("ADMIN", "USER")
 //                        .requestMatchers("/api/roles/**").hasAnyAuthority("ADMIN")

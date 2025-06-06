@@ -2,6 +2,7 @@ package das.uah.apiusuariosdas.dao;
 
 import das.uah.apiusuariosdas.model.Usuario;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IUsuarioDao {
@@ -9,4 +10,5 @@ public interface IUsuarioDao {
     Usuario save(Usuario eUsuario);
     Optional<Usuario> getById(long eId);
     Boolean existsByCorreo(String eCorreo);
+    List<Usuario> getAll();
 }

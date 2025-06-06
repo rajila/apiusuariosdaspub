@@ -5,6 +5,7 @@ import das.uah.apiusuariosdas.repository.IUsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -34,5 +35,10 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     @Override
     public Boolean existsByCorreo(String eCorreo) {
         return repository.existsByCorreo(eCorreo);
+    }
+
+    @Override
+    public List<Usuario> getAll() {
+        return repository.findAll();
     }
 }
