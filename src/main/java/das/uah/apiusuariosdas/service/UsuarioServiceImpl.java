@@ -81,7 +81,7 @@ public class UsuarioServiceImpl implements IUsuarioService{
             usuario.setNombre(eUsuario.getNombre());
             usuario.setApellido(eUsuario.getApellido());
             usuario.setCorreo(eUsuario.getCorreo());
-            usuario.setPassword(eUsuario.getPassword());pwd
+            usuario.setPassword(eUsuario.getPassword());
             usuario.setEstado(1); // activo
             Rol rol = rolService.getById(rolRH.getIdData());
             usuario.getRoles().add(rol);
