@@ -9,6 +9,9 @@ import das.uah.apiusuariosdas.model.Usuario;
 import das.uah.apiusuariosdas.service.IUsuarioService;
 import das.uah.apiusuariosdas.util.ConstantsHelper;
 import das.uah.apiusuariosdas.util.ResponseHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticación", description = "Operaciones relacionadas con la autenticación de usuarios")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final GeneratorJwt generatorJwt;
@@ -34,13 +38,12 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @GetMapping({"", "/"})
-    public ResponseEntity<String> getAll() {
-        return ResponseEntity.ok("Hola desde api usuariosdas...");
-    }
-
     @CrossOrigin
     @PostMapping("/login")
+    @Operation(
+            summary = "Login de usuario",
+            description = "Permite buscar un usuario por usuario y contraseña"
+    )
     public ResponseEntity<LoginDtoOut> login(@RequestBody LoginDtoIn loginDto){
         Usuario userDb = userService.getByCorreoAndEstado(loginDto.getUsername(), 1).orElse(null);
         if (userDb == null) {
@@ -63,6 +66,10 @@ public class AuthController {
         return ResponseEntity.ok(login);
     }
 
+    @Operation(
+            summary = "Registro de nuevo usuario",
+            description = "Permite registrar un usuario por primera vez"
+    )
     @CrossOrigin
     @PostMapping("/registro")
     public ResponseEntity<ResponseHelper> register(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
@@ -71,6 +78,11 @@ public class AuthController {
         return new ResponseEntity<>(null, HttpStatus.FAILED_DEPENDENCY);
     }
 
+    @Operation(
+            summary = "Obtiene datos del usuario logueado",
+            description = "Permite obtener los datos del usuario logueado",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @CrossOrigin
     @GetMapping( "/perfil")
     public ResponseEntity<Usuario> perfil() {
@@ -79,6 +91,11 @@ public class AuthController {
                 ResponseEntity.notFound().build() : ResponseEntity.ok(usuario);
     }
 
+    @Operation(
+            summary = "Modifica datos del usuario logueado",
+            description = "Permite modificar los datos del usuario logueado",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @CrossOrigin
     @PutMapping( "/perfil")
     public ResponseEntity<ResponseHelper> perfilUpdate(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
@@ -87,6 +104,11 @@ public class AuthController {
         return new ResponseEntity<>(null, HttpStatus.FAILED_DEPENDENCY);
     }
 
+    @Operation(
+            summary = "Eliminar usuario logueado",
+            description = "Permite eliminar usuario logueado",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @CrossOrigin
     @DeleteMapping("/perfil")
     public ResponseEntity<ResponseHelper> deletePerfil() {
