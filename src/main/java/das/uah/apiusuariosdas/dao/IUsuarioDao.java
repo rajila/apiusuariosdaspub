@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface IUsuarioDao {
     Optional<Usuario> getByCorreoAndEstado(String eCorreo, Integer eEstado);
+    Optional<Usuario> getByCorreoAndEstadoAndPassword(String eCorreo, Integer eEstado, String password);
     Usuario save(Usuario eUsuario);
     Optional<Usuario> getById(long eId);
     Boolean existsByCorreo(String eCorreo);

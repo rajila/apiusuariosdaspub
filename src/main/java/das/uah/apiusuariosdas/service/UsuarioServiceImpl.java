@@ -35,6 +35,12 @@ public class UsuarioServiceImpl implements IUsuarioService{
     }
 
     @Override
+    public Optional<Usuario> getByCorreoAndEstadoAndPassword(String eCorreo, Integer eEstado, String password) {
+        password = passwordEncoder.encode(password);
+        return usuarioDao.getByCorreoAndEstadoAndPassword(eCorreo, eEstado, password);
+    }
+
+    @Override
     public Usuario getById(long eId) {
         return usuarioDao.getById(eId).orElse(null);
     }

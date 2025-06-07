@@ -23,6 +23,11 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     }
 
     @Override
+    public Optional<Usuario> getByCorreoAndEstadoAndPassword(String eCorreo, Integer eEstado, String password) {
+        return repository.findByCorreoAndEstadoAndPassword(eCorreo, eEstado, password);
+    }
+
+    @Override
     public Usuario save(Usuario eUsuario) {
         return repository.save(eUsuario);
     }

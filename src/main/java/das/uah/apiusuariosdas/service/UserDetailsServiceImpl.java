@@ -27,7 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario user = service.getByCorreoAndEstado(username,1).orElseThrow(() -> new UsernameNotFoundException("Username or Email not found"));
-        //return new User(user.getCorreo(), user.getPassword(), mapRolesToAuthorities(user.getRoles().stream().toList()));
         return new UserLoginJwt(user.getCorreo(),
                 user.getPassword(),
                 mapRolesToAuthorities(user.getRoles().stream().toList()),

@@ -7,6 +7,7 @@ import das.uah.apiusuariosdas.jwt.GeneratorJwt;
 import das.uah.apiusuariosdas.jwt.UserLoginJwt;
 import das.uah.apiusuariosdas.model.Usuario;
 import das.uah.apiusuariosdas.service.IUsuarioService;
+import das.uah.apiusuariosdas.util.ConstantsHelper;
 import das.uah.apiusuariosdas.util.ResponseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,14 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<LoginDtoOut> login(@RequestBody LoginDtoIn loginDto){
+        Usuario userDb = userService.getByCorreoAndEstado(loginDto.getUsername(), 1).orElse(null);
+        if (userDb == null) {
+            LoginDtoOut login = new LoginDtoOut(0,"", "", "");
+            login.setStatus(ConstantsHelper.FAILURE);
+            login.setError("No existe el usuario");
+            return ResponseEntity.ok(login);
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -48,7 +57,10 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserLoginJwt user = (UserLoginJwt) authentication.getPrincipal();
         String token = generatorJwt.generateToken(authentication);
-        return new ResponseEntity<>(new LoginDtoOut(token, user.getNombres(), user.getRol()), HttpStatus.OK);
+        LoginDtoOut login = new LoginDtoOut(userDb.getId(),token, user.getNombres(), user.getRol());
+        login.setStatus(ConstantsHelper.SUCCESS);
+        login.setError("");
+        return ResponseEntity.ok(login);
     }
 
     @CrossOrigin

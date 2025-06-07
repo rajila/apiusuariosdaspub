@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface IUsuarioService {
     Optional<Usuario> getByCorreoAndEstado(String eCorreo, Integer eEstado);
+    Optional<Usuario> getByCorreoAndEstadoAndPassword(String eCorreo, Integer eEstado, String password);
     ResponseHelper create(RegistroUsuarioDtoIn eUsuario);
     ResponseHelper update(RegistroUsuarioDtoIn eUsuario);
     Usuario getById(long eId);
