@@ -41,4 +41,9 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     public List<Usuario> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public List<Usuario> getAllOnlyActive() {
+        return repository.findAllOnlyActive();
+    }
 }

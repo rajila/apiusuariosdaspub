@@ -39,6 +39,16 @@ public class Usuario {
     @JsonIgnore
     private Set<Rol> roles = new LinkedHashSet<>();
 
+    @Transient
+    private String role;
+
+    @PostLoad
+    private void cargarRolName() {
+        if (roles != null && !roles.isEmpty()) {
+            this.role = roles.iterator().next().getCodigo();
+        }
+    }
+
     public Set<Rol> getRoles() {
         return roles;
     }
@@ -95,4 +105,7 @@ public class Usuario {
         this.estado = estado;
     }
 
+    public String getRole() {
+        return role;
+    }
 }

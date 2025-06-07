@@ -52,26 +52,34 @@ public class AuthController {
     }
 
     @CrossOrigin
-    @PostMapping( "/registro")
+    @PostMapping("/registro")
     public ResponseEntity<ResponseHelper> register(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
-        ResponseHelper _response = userService.create(eUsuarioDtoIn);
-        if (_response != null) return ResponseEntity.ok(_response);
+        ResponseHelper response = userService.create(eUsuarioDtoIn);
+        if (response != null) return ResponseEntity.ok(response);
         return new ResponseEntity<>(null, HttpStatus.FAILED_DEPENDENCY);
     }
 
     @CrossOrigin
     @GetMapping( "/perfil")
     public ResponseEntity<Usuario> perfil() {
-        Usuario _usuario = userService.getUserLogin();
-        return (_usuario == null) ?
-                ResponseEntity.notFound().build() : ResponseEntity.ok(_usuario);
+        Usuario usuario = userService.getUserLogin();
+        return (usuario == null) ?
+                ResponseEntity.notFound().build() : ResponseEntity.ok(usuario);
     }
 
     @CrossOrigin
     @PostMapping( "/perfil")
     public ResponseEntity<ResponseHelper> perfilUpdate(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
-        ResponseHelper _response = userService.updatePerfil(eUsuarioDtoIn);
-        if (_response != null) return ResponseEntity.ok(_response);
+        ResponseHelper response = userService.updatePerfil(eUsuarioDtoIn);
+        if (response != null) return ResponseEntity.ok(response);
         return new ResponseEntity<>(null, HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/perfil")
+    public ResponseEntity<ResponseHelper> deletePerfil() {
+        Usuario usuarioLogin = userService.getUserLogin();
+        ResponseHelper response = userService.delete(usuarioLogin.getId());
+        return ResponseEntity.ok(response);
     }
 }
