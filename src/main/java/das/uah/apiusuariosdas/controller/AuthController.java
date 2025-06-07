@@ -80,7 +80,7 @@ public class AuthController {
     }
 
     @CrossOrigin
-    @PostMapping( "/perfil")
+    @PutMapping( "/perfil")
     public ResponseEntity<ResponseHelper> perfilUpdate(@RequestBody RegistroUsuarioDtoIn eUsuarioDtoIn) {
         ResponseHelper response = userService.updatePerfil(eUsuarioDtoIn);
         if (response != null) return ResponseEntity.ok(response);
